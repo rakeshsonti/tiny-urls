@@ -6,7 +6,18 @@ const [url, setUrl] = useState("http://google.com");
 const [genurl, setGenurl] = useState("");
 const [isAlert,setIsAlert]=useState(false);
 const [flag,setFlag]=useState(false);
+const validURL=function(str) {
+  var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  return !!pattern.test(str);
+}
 const getUrl=(url)=>{
+  const valid=validURL(url);
+  if(valid){
   setGenurl("");
   setFlag(true);
     fetch("https://tnny.herokuapp.com/getUrl",{
@@ -28,13 +39,16 @@ const getUrl=(url)=>{
           return r.json();
          } else {
            console.log(r);
-          alert("Error");
+          alert("Failed to generate small link!");
          }
       }
    ).then((r)=>{
     console.log(r.url);
     setGenurl(r.url);
    });
+  }else{
+    alert("Please enter a valid URL!");
+  }
 }
 const copyToClipboard=function(){
   navigator.clipboard.writeText(genurl);
